@@ -12,16 +12,18 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
+//////////////////////////////////////////////// TODOS
+// POST
 app.post('/todos', (req, res) => {
-  const todo = new Todo({
+  new Todo({
     text: req.body.text
   })
     .save()
-    .then(doc => res.send(doc), err => res.status(400).send(err))
-
+    .then(doc => res.send(doc))
+    .catch(err => res.status(400).send());
 })
 
+// GET all
 app.get('/todos', (req, res) => {
   Todo.find().then(todos => {
     res.send({
@@ -32,7 +34,7 @@ app.get('/todos', (req, res) => {
   })
 })
 
-
+// GET single
 app.get('/todos/:id', (req, res) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
@@ -50,7 +52,7 @@ app.get('/todos/:id', (req, res) => {
   })
 })
 
-
+// DELETE
 app.delete('/todos/:id', (req, res) => {
   const { id } = req.params;
 
@@ -66,6 +68,7 @@ app.delete('/todos/:id', (req, res) => {
   })
 })
 
+// PATCH
 app.patch('/todos/:id', (req, res) => {
   const { id } = req.params;
 
@@ -91,6 +94,27 @@ app.patch('/todos/:id', (req, res) => {
     .catch(err => err && console.log(err));
 
 })
+
+/////////////////////////////////////////////// USERS
+app.post('/users', (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
+
+  const user = new User(body);
+
+  user.save()
+    .then(newUser => {
+      return newUser.generateAuthToken();
+    })
+    .then(token => {
+      res.header('x-auth', token).send(user);
+    })
+    .catch(err => res.status(500).send(err));
+})
+
+
+
+
+
 
 app.listen(process.env.PORT, err => {
   if (err) console.log(`There was an error ${err}`);
