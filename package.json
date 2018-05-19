@@ -2,8 +2,12 @@
   "name": "todo_api",
   "version": "1.0.0",
   "main": "index.js",
+  "repository": "https://github.com/JiDarwish/todos_api.git",
+  "author": "JiDarwish <ji.darwish98@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mongodb": "^3.0.6"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "mongoose": "^5.1.1"
   }
 }
