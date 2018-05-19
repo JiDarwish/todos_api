@@ -32,7 +32,7 @@ app.get('/todos', (req, res) => {
 })
 
 
-app.get('/todo/:id', (req, res) => {
+app.get('/todos/:id', (req, res) => {
   const { id } = req.params;
   if (!Types.ObjectId.isValid(id)) {
     res.status(400).send();

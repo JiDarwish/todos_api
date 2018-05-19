@@ -1,15 +1,19 @@
 const expect = require('expect');
 const request = require('supertest');
+const { Types } = require('mongoose');
 
 
 const { app } = require('../server');
 const { Todo } = require('../models/Todo');
 
+const oneId = new Types.ObjectId().toHexString();
 const coupleTestingTodos = [
   {
+    _id: new Types.ObjectId(),
     text: 'Do something'
   },
   {
+    _id: new Types.ObjectId(),
     text: 'it\'s now or never'
   }
 ];
@@ -71,4 +75,33 @@ describe('GET /todos', () => {
       .end(done)
 
   });
+});
+
+describe('GET /todos/:id', () => {
+  it('Should return todo doc', done => {
+
+    request(app)
+      .get(`/todos/${coupleTestingTodos[0]._id.toHexString()}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe(coupleTestingTodos[0].text);
+      })
+      .end(done)
+  });
+
+  it('Should return 404 if todo not found', done => {
+    const objectId = new Types.ObjectId();
+    request(app)
+      .get(`/todos/${objectId.toHexString()}`)
+      .expect(404)
+      .end(done)
+  });
+
+  it('Should return 400 if not a valid id', done => {
+    request(app)
+      .get('/todos/123')
+      .expect(400)
+      .end(done);
+  });
+
 });
