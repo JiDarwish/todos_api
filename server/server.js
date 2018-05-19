@@ -1,3 +1,5 @@
+require('./config/config');
+
 const _ = require('lodash');
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -5,8 +7,6 @@ const { Types } = require('mongoose');
 const { mongoose } = require('./db/mongoose.js');
 const { User } = require('./models/User');
 const { Todo } = require('./models/Todo');
-
-const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(bodyParser.json());
@@ -92,9 +92,9 @@ app.patch('/todos/:id', (req, res) => {
 
 })
 
-app.listen(PORT, err => {
+app.listen(process.env.PORT, err => {
   if (err) console.log(`There was an error ${err}`);
-  console.log(`Server listening to port ${PORT}`);
+  console.log(`Server listening to port ${process.env.PORT}`);
 })
 
 module.exports = { app }
