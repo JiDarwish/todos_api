@@ -43,6 +43,7 @@ UserSchema.methods.generateAuthToken = function () {
   user.tokens = user.tokens.concat([{ token, access }]);
   return user.save()
     .then(() => token)
+    .catch(err => console.log(err));
 }
 
 UserSchema.methods.toJSON = function () {
@@ -83,8 +84,38 @@ UserSchema.pre('save', function (next) {
       user.password = hashedPass;
       next();
     })
-
 })
+
+UserSchema.statics.findByCredentials = function (email, password) {
+  const User = this;
+
+  return User.findOne({ email })
+    .then(user => {
+      if (!user) {
+        return Promise.reject();
+      }
+
+      return bcrypt.compare(password, user.password)
+        .then(isAuth => {
+          if (!isAuth) {
+            return Promise.reject();
+          }
+          return user;
+        })
+        .catch(err => {
+          console.log(err);
+          return Promise.reject();
+        })
+    }).catch(err => {
+      console.log(err);
+      return Promise.reject();
+    })
+}
+
+UserSchema.methods.removeToken = function (token) {
+  const user = this;
+  return user.update({ $pull: { tokens: { token } } }); // remove element with the same token from array
+}
 
 
 module.exports = { User: mongoose.model('User', UserSchema) };
