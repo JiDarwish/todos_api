@@ -42,12 +42,27 @@ app.get('/todos/:id', (req, res) => {
       res.status(404).send({ err: 'No todo with this id found' })
     }
     res.send({
-      todo
+      todos: todo
     });
   }).catch(err => {
     res.status(400).send(err);
   })
+})
 
+
+app.delete('/todos/:id', (req, res) => {
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).send();
+  }
+
+  Todo.findByIdAndRemove(id).then(doc => {
+    if (!doc) {
+      return res.status(404).send();
+    }
+    res.send({ todos: doc });
+  })
 
 })
 
