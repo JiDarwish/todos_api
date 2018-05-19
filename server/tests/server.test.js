@@ -14,7 +14,9 @@ const coupleTestingTodos = [
   },
   {
     _id: new Types.ObjectId(),
-    text: 'it\'s now or never'
+    text: 'it\'s now or never',
+    completed: true,
+    completedAt: 333
   }
 ];
 
@@ -131,4 +133,36 @@ describe('DELETE /todos/:id', () => {
       .expect(404)
       .end(done)
   });
+});
+
+
+describe('PATCH /todos/:id', () => {
+
+  it('Should update an existing item (text + completed)', done => {
+    const body = { completed: true, text: 'My brand new todo item' };
+
+    request(app)
+      .patch(`/todos/${coupleTestingTodos[0]._id.toHexString()}`)
+      .send(body)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todos.completed).toBe(true);
+        expect(res.body.todos.text).toBe(body.text);
+      })
+      .end(done);
+  });
+
+  it('Should clear completedAt when todo is not completed', done => {
+    const body = { completed: false };
+    request(app)
+      .patch(`/todos/${coupleTestingTodos[1]._id.toHexString()}`)
+      .send(body)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todos.completed).toBe(false);
+        expect(res.body.todos.completedAt).toBe(null);
+      })
+      .end(done);
+  });
+
 });
