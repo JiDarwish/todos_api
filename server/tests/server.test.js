@@ -1,3 +1,5 @@
+require('../config/config');
+
 const expect = require('expect');
 const request = require('supertest');
 const { Types } = require('mongoose');
@@ -47,6 +49,7 @@ describe('POST /todos', () => {
           done()
         }).catch(err => done(err));
       })
+      .catch(done);
   });
 
   it('Should not create todo with bad body data', done => {
