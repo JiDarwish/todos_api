@@ -84,7 +84,7 @@ describe('GET /todos/:id', () => {
       .get(`/todos/${coupleTestingTodos[0]._id.toHexString()}`)
       .expect(200)
       .expect(res => {
-        expect(res.body.todo.text).toBe(coupleTestingTodos[0].text);
+        expect(res.body.todos.text).toBe(coupleTestingTodos[0].text);
       })
       .end(done)
   });
@@ -104,4 +104,31 @@ describe('GET /todos/:id', () => {
       .end(done);
   });
 
+});
+
+
+describe('DELETE /todos/:id', () => {
+  it('Should remove a todo and return it', done => {
+    request(app)
+      .delete(`/todos/${coupleTestingTodos[0]._id.toHexString()}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todos.text).toBe(coupleTestingTodos[0].text);
+      })
+      .end(done);
+  });
+
+  it('Should return 400 if id not valid', done => {
+    request(app)
+      .delete('/todos/123')
+      .expect(400)
+      .end(done);
+  });
+
+  it('should return 404 if todo is not found', done => {
+    request(app)
+      .delete(`/todos/5b001decd316650a20a1a3df`)
+      .expect(404)
+      .end(done)
+  });
 });
