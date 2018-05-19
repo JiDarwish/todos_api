@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const bodyParser = require('body-parser');
 const express = require('express');
 const { Types } = require('mongoose');
@@ -63,6 +64,31 @@ app.delete('/todos/:id', (req, res) => {
     }
     res.send({ todos: doc });
   })
+})
+
+app.patch('/todos/:id', (req, res) => {
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    return res.status(400).send({ err: "Not a valid todo id" });
+  }
+
+  const body = _.pick(req.body, ['text', 'completed']);
+
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then(todo => {
+    if (!todo) {
+      return res.status(404).send('No todo with this id found');
+    }
+    res.send({ todos: todo });
+  })
+    .catch(err => err && console.log(err));
 
 })
 
