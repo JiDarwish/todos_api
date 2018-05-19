@@ -7,6 +7,7 @@ const { Types } = require('mongoose');
 const { mongoose } = require('./db/mongoose.js');
 const { User } = require('./models/User');
 const { Todo } = require('./models/Todo');
+const { authenticate } = require('./middleware/middleware')
 
 const app = express();
 app.use(bodyParser.json());
@@ -112,8 +113,9 @@ app.post('/users', (req, res) => {
 })
 
 
-
-
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+})
 
 
 app.listen(process.env.PORT, err => {
